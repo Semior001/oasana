@@ -1,0 +1,22 @@
+{{define "typegen"}}
+
+{{$isStruct := false}}
+{{if ge (len .Schema.TypeDecl) 6}}
+{{$isStruct = eq (slice .Schema.TypeDecl 0 6) "struct"}}
+{{end}}
+
+{{ with .Schema.Description }}{{ . }}{{ else }}// {{.TypeName}} defines model for {{.JsonName}}.{{ end }}
+type {{.TypeName}} {{if and (opts.AliasTypes) (.CanAlias)}}={{end}} {{if not $isStruct}} {{.Schema.TypeDecl}} {{else}} struct {
+    {{range .Schema.Properties}}
+        {{.GoFieldName}} {{.Schema.TypeDecl}} `json:"{{.JsonFieldName}}{{if not .Required}},omitempty{{end}}"`
+    {{end}}
+    {{if .Schema.HasAdditionalProperties}}
+        AdditionalProperties map[string]{{.Schema.AdditionalPropertiesType.GoType}} `json:"-"`
+    {{end}}
+} {{end}}
+
+{{end}}
+
+{{range .Types}}
+{{template "typegen" .}}
+{{end}}

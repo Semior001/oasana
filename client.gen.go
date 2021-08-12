@@ -8458,38 +8458,6 @@ func NewGetProjectStatusesForProjectRequest(server string, projectGid ProjectPat
 
 	}
 
-	if params.OptPretty != nil {
-
-		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "opt_pretty", runtime.ParamLocationQuery, *params.OptPretty); err != nil {
-			return nil, err
-		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-			return nil, err
-		} else {
-			for k, v := range parsed {
-				for _, v2 := range v {
-					queryValues.Add(k, v2)
-				}
-			}
-		}
-
-	}
-
-	if params.OptFields != nil {
-
-		if queryFrag, err := runtime.StyleParamWithLocation("form", false, "opt_fields", runtime.ParamLocationQuery, *params.OptFields); err != nil {
-			return nil, err
-		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-			return nil, err
-		} else {
-			for k, v := range parsed {
-				for _, v2 := range v {
-					queryValues.Add(k, v2)
-				}
-			}
-		}
-
-	}
-
 	if params.Limit != nil {
 
 		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "limit", runtime.ParamLocationQuery, *params.Limit); err != nil {

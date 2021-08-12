@@ -457,52 +457,35 @@ const (
 
 // AddCustomFieldSettingRequest defines model for AddCustomFieldSettingRequest.
 type AddCustomFieldSettingRequest struct {
-
-	// The custom field to associate with this container.
 	CustomField string `json:"custom_field"`
 
-	// A gid of a Custom Field Setting on this container, after which the new Custom Field Setting will be added.  `insert_before` and `insert_after` parameters cannot both be specified.
-	InsertAfter *string `json:"insert_after,omitempty"`
+	InsertAfter string `json:"insert_after,omitempty"`
 
-	// A gid of a Custom Field Setting on this container, before which the new Custom Field Setting will be added.  `insert_before` and `insert_after` parameters cannot both be specified.
-	InsertBefore *string `json:"insert_before,omitempty"`
+	InsertBefore string `json:"insert_before,omitempty"`
 
-	// Whether this field should be considered important to this container (for instance, to display in the list view of items in the container).
-	IsImportant *bool `json:"is_important,omitempty"`
+	IsImportant bool `json:"is_important,omitempty"`
 }
 
 // AddFollowersRequest defines model for AddFollowersRequest.
 type AddFollowersRequest struct {
-
-	// An array of strings identifying users. These can either be the string "me", an email, or the gid of a user.
 	Followers string `json:"followers"`
 }
 
 // AddMembersRequest defines model for AddMembersRequest.
 type AddMembersRequest struct {
-
-	// An array of strings identifying users. These can either be the string "me", an email, or the gid of a user.
 	Members string `json:"members"`
 }
 
 // AsanaNamedResource defines model for AsanaNamedResource.
 type AsanaNamedResource struct {
-	// Embedded struct due to allOf(#/components/schemas/AsanaResource)
-	AsanaResource `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
-
-	// The name of the object.
-	Name *string `json:"name,omitempty"`
+	Name string `json:"name,omitempty"`
 }
 
 // A generic Asana Resource, containing a globally unique identifier.
 type AsanaResource struct {
+	Gid string `json:"gid,omitempty"`
 
-	// Globally unique identifier of the resource, as a string.
-	Gid *string `json:"gid,omitempty"`
-
-	// The base type of this resource.
-	ResourceType *string `json:"resource_type,omitempty"`
+	ResourceType string `json:"resource_type,omitempty"`
 }
 
 // AttachmentBase defines model for AttachmentBase.
@@ -510,32 +493,20 @@ type AttachmentBase AttachmentCompact
 
 // AttachmentCompact defines model for AttachmentCompact.
 type AttachmentCompact struct {
-	// Embedded struct due to allOf(#/components/schemas/AsanaResource)
-	AsanaResource `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
+	Name string `json:"name,omitempty"`
 
-	// The name of the file.
-	Name *string `json:"name,omitempty"`
-
-	// The service hosting the attachment. Valid values are `asana`, `dropbox`, `gdrive`, `onedrive`, `box`, and `external`.
-	// `external` attachments are a beta feature currently limited to specific integrations.
-	ResourceSubtype *interface{} `json:"resource_subtype,omitempty"`
+	ResourceSubtype interface{} `json:"resource_subtype,omitempty"`
 }
 
 // AttachmentRequest defines model for AttachmentRequest.
 type AttachmentRequest struct {
+	File string `json:"file,omitempty"`
 
-	// Required for file attachments.
-	File *string `json:"file,omitempty"`
+	Name string `json:"name,omitempty"`
 
-	// The name of the external resource being attached. Required for attachments of type 'external'.
-	Name *string `json:"name,omitempty"`
+	ResourceSubtype AttachmentRequestResourceSubtype `json:"resource_subtype,omitempty"`
 
-	// The type of the attachment. Must be one of the given values. If not specified, a file attachment of type `asana_file_attachments` will be assumed.
-	ResourceSubtype *AttachmentRequestResourceSubtype `json:"resource_subtype,omitempty"`
-
-	// The URL of the external resource being attached. Required for attachments of type 'external'.
-	Url *string `json:"url,omitempty"`
+	Url string `json:"url,omitempty"`
 }
 
 // The type of the attachment. Must be one of the given values. If not specified, a file attachment of type `asana_file_attachments` will be assumed.
@@ -543,45 +514,33 @@ type AttachmentRequestResourceSubtype string
 
 // AttachmentResponse defines model for AttachmentResponse.
 type AttachmentResponse struct {
-	// Embedded struct due to allOf(#/components/schemas/AttachmentBase)
-	AttachmentBase `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
+	CreatedAt time.Time `json:"created_at,omitempty"`
 
-	// The time at which this resource was created.
-	CreatedAt *time.Time `json:"created_at,omitempty"`
+	DownloadUrl string `json:"download_url,omitempty"`
 
-	// The URL containing the content of the attachment.
-	// *Note:* May be null if the attachment is hosted by [Box](https://www.box.com/). If present, this URL may only be valid for two minutes from the time of retrieval. You should avoid persisting this URL somewhere and just refresh it on demand to ensure you do not keep stale URLs.
-	DownloadUrl *string `json:"download_url"`
+	Host string `json:"host,omitempty"`
 
-	// The service hosting the attachment. Valid values are `asana`, `dropbox`, `gdrive` and `box`.
-	Host   *string `json:"host,omitempty"`
-	Parent *struct {
+	Parent struct {
 		// Embedded struct due to allOf(#/components/schemas/TaskCompact)
 		TaskCompact `yaml:",inline"`
 		// Embedded fields due to inline allOf schema
 	} `json:"parent,omitempty"`
 
-	// The URL where the attachment can be viewed, which may be friendlier to users in a browser than just directing them to a raw file. May be null if no view URL exists for the service.
-	ViewUrl *string `json:"view_url"`
+	ViewUrl string `json:"view_url,omitempty"`
 }
 
 // A request object for use in a batch request.
 type BatchRequest struct {
-	Actions *[]BatchRequestAction `json:"actions,omitempty"`
+	Actions []BatchRequestAction `json:"actions,omitempty"`
 }
 
 // An action object for use in a batch request.
 type BatchRequestAction struct {
+	Data map[string]interface{} `json:"data,omitempty"`
 
-	// For `GET` requests, this should be a map of query parameters you would have normally passed in the URL. Options and pagination are not accepted here; put them in `options` instead. For `POST`, `PATCH`, and `PUT` methods, this should be the content you would have normally put in the data field of the body.
-	Data *map[string]interface{} `json:"data,omitempty"`
-
-	// The HTTP method you wish to emulate for the action.
 	Method BatchRequestActionMethod `json:"method"`
 
-	// Pagination (`limit` and `offset`) and output options (`fields` or `expand`) for the action. “Pretty” JSON output is not an available option on individual actions; if you want pretty output, specify that option on the parent request.
-	Options *struct {
+	Options struct {
 
 		// The fields to retrieve in the request.
 		Fields *[]string `json:"fields,omitempty"`
@@ -593,7 +552,6 @@ type BatchRequestAction struct {
 		Offset *int `json:"offset,omitempty"`
 	} `json:"options,omitempty"`
 
-	// The path of the desired endpoint relative to the API’s base URL. Query parameters are not accepted here; put them in `data` instead.
 	RelativePath string `json:"relative_path"`
 }
 
@@ -602,51 +560,32 @@ type BatchRequestActionMethod string
 
 // A response object returned from a batch request.
 type BatchResponse struct {
+	Body map[string]interface{} `json:"body,omitempty"`
 
-	// The JSON body that the invoked endpoint returned.
-	Body *map[string]interface{} `json:"body,omitempty"`
+	Headers map[string]interface{} `json:"headers,omitempty"`
 
-	// A map of HTTP headers specific to this result. This is primarily used for returning a `Location` header to accompany a `201 Created` result.  The parent HTTP response will contain all common headers.
-	Headers *map[string]interface{} `json:"headers,omitempty"`
-
-	// The HTTP status code that the invoked endpoint returned.
-	StatusCode *int `json:"status_code,omitempty"`
+	StatusCode int `json:"status_code,omitempty"`
 }
 
 // CustomFieldBase defines model for CustomFieldBase.
 type CustomFieldBase struct {
-	// Embedded struct due to allOf(#/components/schemas/CustomFieldCompact)
-	CustomFieldCompact `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
+	CurrencyCode string `json:"currency_code,omitempty"`
 
-	// ISO 4217 currency code to format this custom field. This will be null if the `format` is not `currency`.
-	CurrencyCode *string `json:"currency_code"`
+	CustomLabel string `json:"custom_label,omitempty"`
 
-	// This is the string that appears next to the custom field value. This will be null if the `format` is not `custom`.
-	CustomLabel *string `json:"custom_label"`
+	CustomLabelPosition CustomFieldBaseCustomLabelPosition `json:"custom_label_position,omitempty"`
 
-	// Only relevant for custom fields with `custom` format. This depicts where to place the custom label. This will be null if the `format` is not `custom`.
-	CustomLabelPosition *CustomFieldBaseCustomLabelPosition `json:"custom_label_position,omitempty"`
+	Description string `json:"description,omitempty"`
 
-	// [Opt In](/docs/input-output-options). The description of the custom field.
-	Description *string `json:"description,omitempty"`
+	EnumOptions []EnumOption `json:"enum_options,omitempty"`
 
-	// *Conditional*. Only relevant for custom fields of type `enum`. This array specifies the possible values which an `enum` custom field can adopt. To modify the enum options, refer to [working with enum options](/docs/create-an-enum-option).
-	EnumOptions *[]EnumOption `json:"enum_options,omitempty"`
+	Format CustomFieldBaseFormat `json:"format,omitempty"`
 
-	// The format of this custom field.
-	Format *CustomFieldBaseFormat `json:"format,omitempty"`
+	HasNotificationsEnabled bool `json:"has_notifications_enabled,omitempty"`
 
-	// *Conditional*. This flag describes whether a follower of a task with this field should receive inbox notifications from changes to this field.
-	HasNotificationsEnabled *bool `json:"has_notifications_enabled,omitempty"`
+	IsGlobalToWorkspace bool `json:"is_global_to_workspace,omitempty"`
 
-	// This flag describes whether this custom field is available to every container in the workspace. Before project-specific custom fields, this field was always true.
-	IsGlobalToWorkspace *bool `json:"is_global_to_workspace,omitempty"`
-
-	// Only relevant for custom fields of type ‘Number’. This field dictates the number of places after the decimal to round to, i.e. 0 is integer values, 1 rounds to the nearest tenth, and so on. Must be between 0 and 6, inclusive.
-	// For percentage format, this may be unintuitive, as a value of 0.25 has a precision of 0, while a value of 0.251 has a precision of 1. This is due to 0.25 being displayed as 25%.
-	// The identifier format will always have a precision of 0.
-	Precision *int `json:"precision,omitempty"`
+	Precision int `json:"precision,omitempty"`
 }
 
 // Only relevant for custom fields with `custom` format. This depicts where to place the custom label. This will be null if the `format` is not `custom`.
@@ -657,33 +596,21 @@ type CustomFieldBaseFormat string
 
 // CustomFieldCompact defines model for CustomFieldCompact.
 type CustomFieldCompact struct {
-	// Embedded struct due to allOf(#/components/schemas/AsanaResource)
-	AsanaResource `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
+	DisplayValue string `json:"display_value,omitempty"`
 
-	// A string representation for the value of the custom field. Integrations that don't require the underlying type should use this field to read values. Using this field will future-proof an app against new custom field types.
-	DisplayValue *string `json:"display_value,omitempty"`
+	Enabled bool `json:"enabled,omitempty"`
 
-	// *Conditional*. Determines if the custom field is enabled or not.
-	Enabled *bool `json:"enabled,omitempty"`
+	EnumOptions []EnumOption `json:"enum_options,omitempty"`
 
-	// *Conditional*. Only relevant for custom fields of type `enum`. This array specifies the possible values which an `enum` custom field can adopt. To modify the enum options, refer to [working with enum options](/docs/create-an-enum-option).
-	EnumOptions *[]EnumOption `json:"enum_options,omitempty"`
+	Name string `json:"name,omitempty"`
 
-	// The name of the custom field.
-	Name *string `json:"name,omitempty"`
+	NumberValue float32 `json:"number_value,omitempty"`
 
-	// *Conditional*. This number is the value of a number custom field.
-	NumberValue *float32 `json:"number_value,omitempty"`
+	ResourceSubtype CustomFieldCompactResourceSubtype `json:"resource_subtype,omitempty"`
 
-	// The type of the custom field. Must be one of the given values.
-	ResourceSubtype *CustomFieldCompactResourceSubtype `json:"resource_subtype,omitempty"`
+	TextValue string `json:"text_value,omitempty"`
 
-	// *Conditional*. This string is the value of a text custom field.
-	TextValue *string `json:"text_value,omitempty"`
-
-	// *Deprecated: new integrations should prefer the resource_subtype field.* The type of the custom field. Must be one of the given values.
-	Type *CustomFieldCompactType `json:"type,omitempty"`
+	Type CustomFieldCompactType `json:"type,omitempty"`
 }
 
 // The type of the custom field. Must be one of the given values.
@@ -694,28 +621,20 @@ type CustomFieldCompactType string
 
 // CustomFieldRequest defines model for CustomFieldRequest.
 type CustomFieldRequest struct {
-	// Embedded struct due to allOf(#/components/schemas/CustomFieldBase)
-	CustomFieldBase `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
-
-	// *Create-Only* The workspace to create a custom field in.
 	Workspace string `json:"workspace"`
 }
 
 // CustomFieldResponse defines model for CustomFieldResponse.
 type CustomFieldResponse struct {
-	// Embedded struct due to allOf(#/components/schemas/CustomFieldBase)
-	CustomFieldBase `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
-	CreatedBy *UserCompact `json:"created_by,omitempty"`
-	EnumValue *struct {
+	CreatedBy UserCompact `json:"created_by,omitempty"`
+
+	EnumValue struct {
 		// Embedded struct due to allOf(#/components/schemas/EnumOption)
 		EnumOption `yaml:",inline"`
 		// Embedded fields due to inline allOf schema
 	} `json:"enum_value,omitempty"`
 
-	// *Conditional*. Only relevant for custom fields of type `multi_enum`. This object is the chosen values of a multi_enum custom field.
-	MultiEnumValues *[]EnumOption `json:"multi_enum_values,omitempty"`
+	MultiEnumValues []EnumOption `json:"multi_enum_values,omitempty"`
 }
 
 // CustomFieldSettingBase defines model for CustomFieldSettingBase.
@@ -723,30 +642,25 @@ type CustomFieldSettingBase CustomFieldSettingCompact
 
 // CustomFieldSettingCompact defines model for CustomFieldSettingCompact.
 type CustomFieldSettingCompact struct {
-	// Embedded struct due to allOf(#/components/schemas/AsanaResource)
-	AsanaResource `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
 }
 
 // CustomFieldSettingResponse defines model for CustomFieldSettingResponse.
 type CustomFieldSettingResponse struct {
-	// Embedded struct due to allOf(#/components/schemas/CustomFieldSettingBase)
-	CustomFieldSettingBase `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
-	CustomField *struct {
+	CustomField struct {
 		// Embedded struct due to allOf(#/components/schemas/CustomFieldResponse)
 		CustomFieldResponse `yaml:",inline"`
 		// Embedded fields due to inline allOf schema
 	} `json:"custom_field,omitempty"`
 
-	// `is_important` is used in the Asana web application to determine if this custom field is displayed in the list/grid view of a project or portfolio.
-	IsImportant *bool `json:"is_important,omitempty"`
-	Parent      *struct {
+	IsImportant bool `json:"is_important,omitempty"`
+
+	Parent struct {
 		// Embedded struct due to allOf(#/components/schemas/ProjectCompact)
 		ProjectCompact `yaml:",inline"`
 		// Embedded fields due to inline allOf schema
 	} `json:"parent,omitempty"`
-	Project *struct {
+
+	Project struct {
 		// Embedded struct due to allOf(#/components/schemas/ProjectCompact)
 		ProjectCompact `yaml:",inline"`
 		// Embedded fields due to inline allOf schema
@@ -758,18 +672,11 @@ type EmptyResponse map[string]interface{}
 
 // EnumOption defines model for EnumOption.
 type EnumOption struct {
-	// Embedded struct due to allOf(#/components/schemas/AsanaResource)
-	AsanaResource `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
+	Color string `json:"color,omitempty"`
 
-	// The color of the enum option. Defaults to ‘none’.
-	Color *string `json:"color,omitempty"`
+	Enabled bool `json:"enabled,omitempty"`
 
-	// Whether or not the enum option is a selectable value for the custom field.
-	Enabled *bool `json:"enabled,omitempty"`
-
-	// The name of the enum option.
-	Name *string `json:"name,omitempty"`
+	Name string `json:"name,omitempty"`
 }
 
 // EnumOptionBase defines model for EnumOptionBase.
@@ -777,41 +684,27 @@ type EnumOptionBase EnumOption
 
 // EnumOptionInsertRequest defines model for EnumOptionInsertRequest.
 type EnumOptionInsertRequest struct {
+	AfterEnumOption string `json:"after_enum_option,omitempty"`
 
-	// An existing enum option within this custom field after which the new enum option should be inserted. Cannot be provided together with before_enum_option.
-	AfterEnumOption *string `json:"after_enum_option,omitempty"`
+	BeforeEnumOption string `json:"before_enum_option,omitempty"`
 
-	// An existing enum option within this custom field before which the new enum option should be inserted. Cannot be provided together with after_enum_option.
-	BeforeEnumOption *string `json:"before_enum_option,omitempty"`
-
-	// The gid of the enum option to relocate.
 	EnumOption string `json:"enum_option"`
 }
 
 // EnumOptionRequest defines model for EnumOptionRequest.
 type EnumOptionRequest struct {
-	// Embedded struct due to allOf(#/components/schemas/EnumOptionBase)
-	EnumOptionBase `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
+	InsertAfter string `json:"insert_after,omitempty"`
 
-	// An existing enum option within this custom field after which the new enum option should be inserted. Cannot be provided together with before_enum_option.
-	InsertAfter *string `json:"insert_after,omitempty"`
-
-	// An existing enum option within this custom field before which the new enum option should be inserted. Cannot be provided together with after_enum_option.
-	InsertBefore *string `json:"insert_before,omitempty"`
+	InsertBefore string `json:"insert_before,omitempty"`
 }
 
 // Error defines model for Error.
 type Error struct {
+	Help string `json:"help,omitempty"`
 
-	// Additional information directing developers to resources on how to address and fix the problem, if available.
-	Help *string `json:"help,omitempty"`
+	Message string `json:"message,omitempty"`
 
-	// Message providing more detail about the error that occurred, if available.
-	Message *string `json:"message,omitempty"`
-
-	// *500 errors only*. A unique error phrase which can be used when contacting developer support to help identify the exact occurrence of the problem in Asana’s logs.
-	Phrase *string `json:"phrase,omitempty"`
+	Phrase string `json:"phrase,omitempty"`
 }
 
 // Sadly, sometimes requests to the API are not successful. Failures can
@@ -827,7 +720,7 @@ type Error struct {
 // Asana support to quickly look up the incident that caused the server
 // error.
 type ErrorResponse struct {
-	Errors *[]Error `json:"errors,omitempty"`
+	Errors []Error `json:"errors,omitempty"`
 }
 
 // An *event* is an object representing a change to a resource that was
@@ -870,12 +763,9 @@ type ErrorResponse struct {
 // `Event.change.action` will be `added`, and `added_value` will be
 // an object with the user's `id` and `type`.
 type EventResponse struct {
+	Action string `json:"action,omitempty"`
 
-	// The type of action taken on the **resource** that triggered the event.  This can be one of `changed`, `added`, `removed`, `deleted`, or `undeleted` depending on the nature of the event.
-	Action *string `json:"action,omitempty"`
-
-	// Information about the type of change that has occurred. This field is only present when the value of the property `action`, describing the action taken on the **resource**, is `changed`.
-	Change *struct {
+	Change struct {
 
 		// The type of action taken on the **field** which has been changed.  This can be one of `changed`, `added`, or `removed` depending on the nature of the change.
 		Action *string `json:"action,omitempty"`
@@ -893,22 +783,23 @@ type EventResponse struct {
 		RemovedValue *interface{} `json:"removed_value,omitempty"`
 	} `json:"change,omitempty"`
 
-	// The timestamp when the event occurred.
-	CreatedAt *time.Time `json:"created_at,omitempty"`
-	Parent    *struct {
+	CreatedAt time.Time `json:"created_at,omitempty"`
+
+	Parent struct {
 		// Embedded struct due to allOf(#/components/schemas/AsanaNamedResource)
 		AsanaNamedResource `yaml:",inline"`
 		// Embedded fields due to inline allOf schema
 	} `json:"parent,omitempty"`
-	Resource *struct {
+
+	Resource struct {
 		// Embedded struct due to allOf(#/components/schemas/AsanaNamedResource)
 		AsanaNamedResource `yaml:",inline"`
 		// Embedded fields due to inline allOf schema
 	} `json:"resource,omitempty"`
 
-	// *Deprecated: Refer to the resource_type of the resource.* The type of the resource that generated the event.
-	Type *string `json:"type,omitempty"`
-	User *struct {
+	Type string `json:"type,omitempty"`
+
+	User struct {
 		// Embedded struct due to allOf(#/components/schemas/UserCompact)
 		UserCompact `yaml:",inline"`
 		// Embedded fields due to inline allOf schema
@@ -917,64 +808,49 @@ type EventResponse struct {
 
 // GoalAddSubgoalRequest defines model for GoalAddSubgoalRequest.
 type GoalAddSubgoalRequest struct {
+	InsertAfter string `json:"insert_after,omitempty"`
 
-	// An id of a subgoal of this parent goal. The new subgoal will be added after the one specified here. `insert_before` and `insert_after` parameters cannot both be specified.
-	InsertAfter *string `json:"insert_after,omitempty"`
+	InsertBefore string `json:"insert_before,omitempty"`
 
-	// An id of a subgoal of this parent goal. The new subgoal will be added before the one specified here. `insert_before` and `insert_after` parameters cannot both be specified.
-	InsertBefore *string `json:"insert_before,omitempty"`
-
-	// The goal gid to add as subgoal to a parent goal
 	Subgoal string `json:"subgoal"`
 }
 
 // GoalAddSupportingWorkRequest defines model for GoalAddSupportingWorkRequest.
 type GoalAddSupportingWorkRequest struct {
-
-	// The project/portfolio gid to add as supporting work for a goal
 	SupportingWork string `json:"supporting_work"`
 }
 
 // GoalBase defines model for GoalBase.
 type GoalBase struct {
-	// Embedded struct due to allOf(#/components/schemas/GoalCompact)
-	GoalCompact `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
+	DueOn string `json:"due_on,omitempty"`
 
-	// The localized day on which this goal is due. This takes a date with format `YYYY-MM-DD`.
-	DueOn *string `json:"due_on"`
+	Followers []UserCompact `json:"followers,omitempty"`
 
-	// Array of users following this goal.
-	Followers *[]UserCompact `json:"followers,omitempty"`
+	HtmlNotes string `json:"html_notes,omitempty"`
 
-	// The notes of the goal with formatting as HTML.
-	HtmlNotes *string `json:"html_notes,omitempty"`
+	IsWorkspaceLevel bool `json:"is_workspace_level,omitempty"`
 
-	// Whether the goal belongs to the workspace (and is listed as part of the workspace’s goals) or not. If it isn’t a workspace-level goal, it is a team-level goal, and is associated with the goal’s team.
-	IsWorkspaceLevel *bool `json:"is_workspace_level,omitempty"`
+	Liked bool `json:"liked,omitempty"`
 
-	// True if the goal is liked by the authorized user, false if not.
-	Liked  *bool `json:"liked,omitempty"`
-	Metric *struct {
+	Metric struct {
 		// Embedded struct due to allOf(#/components/schemas/GoalMetricBase)
 		GoalMetricBase `yaml:",inline"`
 		// Embedded fields due to inline allOf schema
 	} `json:"metric,omitempty"`
 
-	// Free-form textual information associated with the goal (i.e. its description).
-	Notes *string `json:"notes,omitempty"`
+	Notes string `json:"notes,omitempty"`
 
-	// The day on which work for this goal begins, or null if the goal has no start date. This takes a date with `YYYY-MM-DD` format, and cannot be set unless there is an accompanying due date.
-	StartOn *string `json:"start_on"`
+	StartOn string `json:"start_on,omitempty"`
 
-	// The current status of this goal. When the goal is open, its status can be `green`, `yellow`, and `red` to reflect "On Track", "At Risk", and "Off Track", respectively. When the goal is closed, the value can be `missed`, `achieved`, `partial`, or `dropped`.
-	Status *string `json:"status"`
-	Team   *struct {
+	Status string `json:"status,omitempty"`
+
+	Team struct {
 		// Embedded struct due to allOf(#/components/schemas/TeamCompact)
 		TeamCompact `yaml:",inline"`
 		// Embedded fields due to inline allOf schema
 	} `json:"team,omitempty"`
-	Workspace *struct {
+
+	Workspace struct {
 		// Embedded struct due to allOf(#/components/schemas/WorkspaceCompact)
 		WorkspaceCompact `yaml:",inline"`
 		// Embedded fields due to inline allOf schema
@@ -983,13 +859,9 @@ type GoalBase struct {
 
 // GoalCompact defines model for GoalCompact.
 type GoalCompact struct {
-	// Embedded struct due to allOf(#/components/schemas/AsanaResource)
-	AsanaResource `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
+	Name string `json:"name,omitempty"`
 
-	// The name of the goal.
-	Name  *string `json:"name,omitempty"`
-	Owner *struct {
+	Owner struct {
 		// Embedded struct due to allOf(#/components/schemas/UserCompact)
 		UserCompact `yaml:",inline"`
 		// Embedded fields due to inline allOf schema
@@ -998,34 +870,21 @@ type GoalCompact struct {
 
 // GoalMetricBase defines model for GoalMetricBase.
 type GoalMetricBase struct {
-	// Embedded struct due to allOf(#/components/schemas/AsanaResource)
-	AsanaResource `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
+	CurrencyCode string `json:"currency_code,omitempty"`
 
-	// ISO 4217 currency code to format this custom field. This will be null if the `format` is not `currency`.
-	CurrencyCode *string `json:"currency_code"`
+	CurrentDisplayValue string `json:"current_display_value,omitempty"`
 
-	// *Conditional*. This string is the current value of a goal metric of type string.
-	CurrentDisplayValue *string `json:"current_display_value,omitempty"`
+	CurrentNumberValue float32 `json:"current_number_value,omitempty"`
 
-	// *Conditional*. This number is the current value of a goal metric of type number.
-	CurrentNumberValue *float32 `json:"current_number_value,omitempty"`
+	InitialNumberValue float32 `json:"initial_number_value,omitempty"`
 
-	// *Conditional*. This number is the start value of a goal metric of type number.
-	InitialNumberValue *float32 `json:"initial_number_value,omitempty"`
+	Precision int `json:"precision,omitempty"`
 
-	// Only relevant for goal metrics of type ‘Number’. This field dictates the number of places after the decimal to round to, i.e. 0 is integer values, 1 rounds to the nearest tenth, and so on. Must be between 0 and 6, inclusive.
-	// For percentage format, this may be unintuitive, as a value of 0.25 has a precision of 0, while a value of 0.251 has a precision of 1. This is due to 0.25 being displayed as 25%.
-	Precision *int `json:"precision,omitempty"`
+	ResourceSubtype GoalMetricBaseResourceSubtype `json:"resource_subtype,omitempty"`
 
-	// The subtype of this resource. Different subtypes retain many of the same fields and behavior, but may render differently in Asana or represent resources with different semantic meaning.
-	ResourceSubtype *GoalMetricBaseResourceSubtype `json:"resource_subtype,omitempty"`
+	TargetNumberValue float32 `json:"target_number_value,omitempty"`
 
-	// *Conditional*. This number is the end value of a goal metric of type number.
-	TargetNumberValue *float32 `json:"target_number_value,omitempty"`
-
-	// A supported unit of measure for the goal metric, or none.
-	Unit *GoalMetricBaseUnit `json:"unit,omitempty"`
+	Unit GoalMetricBaseUnit `json:"unit,omitempty"`
 }
 
 // The subtype of this resource. Different subtypes retain many of the same fields and behavior, but may render differently in Asana or represent resources with different semantic meaning.
@@ -1036,12 +895,7 @@ type GoalMetricBaseUnit string
 
 // GoalMetricCurrentValueRequest defines model for GoalMetricCurrentValueRequest.
 type GoalMetricCurrentValueRequest struct {
-	// Embedded struct due to allOf(#/components/schemas/AsanaResource)
-	AsanaResource `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
-
-	// *Conditional*. This number is the current value of a goal metric of type number.
-	CurrentNumberValue *float32 `json:"current_number_value,omitempty"`
+	CurrentNumberValue float32 `json:"current_number_value,omitempty"`
 }
 
 // GoalMetricRequest defines model for GoalMetricRequest.
@@ -1049,8 +903,6 @@ type GoalMetricRequest GoalMetricBase
 
 // GoalRemoveSubgoalRequest defines model for GoalRemoveSubgoalRequest.
 type GoalRemoveSubgoalRequest struct {
-
-	// The goal gid to remove as subgoal from the parent goal
 	Subgoal string `json:"subgoal"`
 }
 
@@ -1059,15 +911,9 @@ type GoalRequest GoalBase
 
 // GoalResponse defines model for GoalResponse.
 type GoalResponse struct {
-	// Embedded struct due to allOf(#/components/schemas/GoalBase)
-	GoalBase `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
+	Likes []Like `json:"likes,omitempty"`
 
-	// Array of likes for users who have liked this goal.
-	Likes *[]Like `json:"likes,omitempty"`
-
-	// The number of users who have liked this goal.
-	NumLikes *int `json:"num_likes,omitempty"`
+	NumLikes int `json:"num_likes,omitempty"`
 }
 
 // JobBase defines model for JobBase.
@@ -1075,15 +921,13 @@ type JobBase JobCompact
 
 // JobCompact defines model for JobCompact.
 type JobCompact struct {
-	// Embedded struct due to allOf(#/components/schemas/AsanaResource)
-	AsanaResource `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
-	NewProject *ProjectCompact `json:"new_project,omitempty"`
-	NewTask    *TaskCompact    `json:"new_task,omitempty"`
+	NewProject ProjectCompact `json:"new_project,omitempty"`
 
-	// The subtype of this resource. Different subtypes retain many of the same fields and behavior, but may render differently in Asana or represent resources with different semantic meaning.
-	ResourceSubtype *string           `json:"resource_subtype,omitempty"`
-	Status          *JobCompactStatus `json:"status,omitempty"`
+	NewTask TaskCompact `json:"new_task,omitempty"`
+
+	ResourceSubtype string `json:"resource_subtype,omitempty"`
+
+	Status JobCompactStatus `json:"status,omitempty"`
 }
 
 // JobCompactStatus defines model for JobCompact.Status.
@@ -1094,24 +938,19 @@ type JobResponse JobBase
 
 // An object to represent a user's like.
 type Like struct {
+	Gid string `json:"gid,omitempty"`
 
-	// Globally unique identifier of the object, as a string.
-	Gid  *string      `json:"gid,omitempty"`
-	User *UserCompact `json:"user,omitempty"`
+	User UserCompact `json:"user,omitempty"`
 }
 
 // ModifyDependenciesRequest defines model for ModifyDependenciesRequest.
 type ModifyDependenciesRequest struct {
-
-	// An array of task gids that a task depends on.
-	Dependencies *[]string `json:"dependencies,omitempty"`
+	Dependencies []string `json:"dependencies,omitempty"`
 }
 
 // A set of dependent tasks.
 type ModifyDependentsRequest struct {
-
-	// An array of task gids that are dependents of the given task.
-	Dependents *[]string `json:"dependents,omitempty"`
+	Dependents []string `json:"dependents,omitempty"`
 }
 
 // OrganizationExportBase defines model for OrganizationExportBase.
@@ -1119,26 +958,13 @@ type OrganizationExportBase OrganizationExportCompact
 
 // OrganizationExportCompact defines model for OrganizationExportCompact.
 type OrganizationExportCompact struct {
-	// Embedded struct due to allOf(#/components/schemas/AsanaResource)
-	AsanaResource `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
+	CreatedAt time.Time `json:"created_at,omitempty"`
 
-	// The time at which this resource was created.
-	CreatedAt *time.Time `json:"created_at,omitempty"`
+	DownloadUrl string `json:"download_url,omitempty"`
 
-	// Download this URL to retreive the full export of the organization
-	// in JSON format. It will be compressed in a gzip (.gz) container.
-	//
-	// *Note: May be null if the export is still in progress or
-	// failed.  If present, this URL may only be valid for 1 hour from
-	// the time of retrieval. You should avoid persisting this URL
-	// somewhere and rather refresh on demand to ensure you do not keep
-	// stale URLs.*
-	DownloadUrl  *string           `json:"download_url"`
-	Organization *WorkspaceCompact `json:"organization,omitempty"`
+	Organization WorkspaceCompact `json:"organization,omitempty"`
 
-	// The current state of the export.
-	State *OrganizationExportCompactState `json:"state,omitempty"`
+	State OrganizationExportCompactState `json:"state,omitempty"`
 }
 
 // The current state of the export.
@@ -1146,9 +972,7 @@ type OrganizationExportCompactState string
 
 // An *organization_export* request starts a job to export the complete data of the given Organization.
 type OrganizationExportRequest struct {
-
-	// Globally unique identifier for the workspace or organization.
-	Organization *string `json:"organization,omitempty"`
+	Organization string `json:"organization,omitempty"`
 }
 
 // OrganizationExportResponse defines model for OrganizationExportResponse.
@@ -1156,25 +980,16 @@ type OrganizationExportResponse OrganizationExportBase
 
 // PortfolioAddItemRequest defines model for PortfolioAddItemRequest.
 type PortfolioAddItemRequest struct {
+	InsertAfter string `json:"insert_after,omitempty"`
 
-	// An id of an item in this portfolio. The new item will be added after the one specified here. `insert_before` and `insert_after` parameters cannot both be specified.
-	InsertAfter *string `json:"insert_after,omitempty"`
+	InsertBefore string `json:"insert_before,omitempty"`
 
-	// An id of an item in this portfolio. The new item will be added before the one specified here. `insert_before` and `insert_after` parameters cannot both be specified.
-	InsertBefore *string `json:"insert_before,omitempty"`
-
-	// The item to add to the portfolio.
 	Item string `json:"item"`
 }
 
 // PortfolioBase defines model for PortfolioBase.
 type PortfolioBase struct {
-	// Embedded struct due to allOf(#/components/schemas/PortfolioCompact)
-	PortfolioCompact `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
-
-	// Color of the portfolio.
-	Color *PortfolioBaseColor `json:"color,omitempty"`
+	Color PortfolioBaseColor `json:"color,omitempty"`
 }
 
 // Color of the portfolio.
@@ -1182,12 +997,7 @@ type PortfolioBaseColor string
 
 // PortfolioCompact defines model for PortfolioCompact.
 type PortfolioCompact struct {
-	// Embedded struct due to allOf(#/components/schemas/AsanaResource)
-	AsanaResource `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
-
-	// The name of the portfolio.
-	Name *string `json:"name,omitempty"`
+	Name string `json:"name,omitempty"`
 }
 
 // PortfolioMembershipBase defines model for PortfolioMembershipBase.
@@ -1195,11 +1005,9 @@ type PortfolioMembershipBase PortfolioMembershipCompact
 
 // PortfolioMembershipCompact defines model for PortfolioMembershipCompact.
 type PortfolioMembershipCompact struct {
-	// Embedded struct due to allOf(#/components/schemas/AsanaResource)
-	AsanaResource `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
-	Portfolio *PortfolioCompact `json:"portfolio,omitempty"`
-	User      *UserCompact      `json:"user,omitempty"`
+	Portfolio PortfolioCompact `json:"portfolio,omitempty"`
+
+	User UserCompact `json:"user,omitempty"`
 }
 
 // PortfolioMembershipResponse defines model for PortfolioMembershipResponse.
@@ -1207,48 +1015,35 @@ type PortfolioMembershipResponse PortfolioMembershipBase
 
 // PortfolioRemoveItemRequest defines model for PortfolioRemoveItemRequest.
 type PortfolioRemoveItemRequest struct {
-
-	// The item to remove from the portfolio.
 	Item string `json:"item"`
 }
 
 // PortfolioRequest defines model for PortfolioRequest.
 type PortfolioRequest struct {
-	// Embedded struct due to allOf(#/components/schemas/PortfolioBase)
-	PortfolioBase `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
+	Members []string `json:"members,omitempty"`
 
-	// An array of strings identifying users. These can either be the string "me", an email, or the gid of a user.
-	Members *[]string `json:"members,omitempty"`
-
-	// Gid of an object.
-	Workspace *string `json:"workspace,omitempty"`
+	Workspace string `json:"workspace,omitempty"`
 }
 
 // PortfolioResponse defines model for PortfolioResponse.
 type PortfolioResponse struct {
-	// Embedded struct due to allOf(#/components/schemas/PortfolioBase)
-	PortfolioBase `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
+	CreatedAt time.Time `json:"created_at,omitempty"`
 
-	// The time at which this resource was created.
-	CreatedAt *time.Time   `json:"created_at,omitempty"`
-	CreatedBy *UserCompact `json:"created_by,omitempty"`
+	CreatedBy UserCompact `json:"created_by,omitempty"`
 
-	// Array of custom field settings applied to the portfolio.
-	CustomFieldSettings *[]CustomFieldSettingResponse `json:"custom_field_settings,omitempty"`
+	CustomFieldSettings []CustomFieldSettingResponse `json:"custom_field_settings,omitempty"`
 
-	// The localized day on which this portfolio is due. This takes a date with format YYYY-MM-DD.
-	DueOn   *time.Time     `json:"due_on"`
-	Members *[]UserCompact `json:"members,omitempty"`
-	Owner   *UserCompact   `json:"owner,omitempty"`
+	DueOn time.Time `json:"due_on,omitempty"`
 
-	// A url that points directly to the object within Asana.
-	PermalinkUrl *string `json:"permalink_url,omitempty"`
+	Members []UserCompact `json:"members,omitempty"`
 
-	// The day on which work for this portfolio begins, or null if the portfolio has no start date. This takes a date with `YYYY-MM-DD` format. *Note: `due_on` must be present in the request when setting or unsetting the `start_on` parameter. Additionally, start_on and due_on cannot be the same date.*
-	StartOn   *openapi_types.Date `json:"start_on"`
-	Workspace *struct {
+	Owner UserCompact `json:"owner,omitempty"`
+
+	PermalinkUrl string `json:"permalink_url,omitempty"`
+
+	StartOn openapi_types.Date `json:"start_on,omitempty"`
+
+	Workspace struct {
 		// Embedded struct due to allOf(#/components/schemas/WorkspaceCompact)
 		WorkspaceCompact `yaml:",inline"`
 		// Embedded fields due to inline allOf schema
@@ -1259,85 +1054,59 @@ type PortfolioResponse struct {
 //
 // This is read-only except for a small group of whitelisted apps.
 type Preview struct {
+	Fallback string `json:"fallback,omitempty"`
 
-	// Some fallback text to display if unable to display the full preview.
-	Fallback *string `json:"fallback,omitempty"`
+	Footer string `json:"footer,omitempty"`
 
-	// Text to display in the footer.
-	Footer *string `json:"footer,omitempty"`
+	Header string `json:"header,omitempty"`
 
-	// Text to display in the header.
-	Header *string `json:"header,omitempty"`
+	HeaderLink string `json:"header_link,omitempty"`
 
-	// Where the header will link to.
-	HeaderLink *string `json:"header_link,omitempty"`
+	HtmlText string `json:"html_text,omitempty"`
 
-	// HTML formatted text for the body of the preview.
-	HtmlText *string `json:"html_text,omitempty"`
+	Text string `json:"text,omitempty"`
 
-	// Text for the body of the preview.
-	Text *string `json:"text,omitempty"`
+	Title string `json:"title,omitempty"`
 
-	// Text to display as the title.
-	Title *string `json:"title,omitempty"`
-
-	// Where to title will link to.
-	TitleLink *string `json:"title_link,omitempty"`
+	TitleLink string `json:"title_link,omitempty"`
 }
 
 // ProjectBase defines model for ProjectBase.
 type ProjectBase struct {
-	// Embedded struct due to allOf(#/components/schemas/ProjectCompact)
-	ProjectCompact `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
+	Archived bool `json:"archived,omitempty"`
 
-	// True if the project is archived, false if not. Archived projects do not show in the UI by default and may be treated differently for queries.
-	Archived *bool `json:"archived,omitempty"`
+	Color ProjectBaseColor `json:"color,omitempty"`
 
-	// Color of the project.
-	Color *ProjectBaseColor `json:"color"`
+	CreatedAt time.Time `json:"created_at,omitempty"`
 
-	// The time at which this resource was created.
-	CreatedAt     *time.Time `json:"created_at,omitempty"`
-	CurrentStatus *struct {
+	CurrentStatus struct {
 		// Embedded struct due to allOf(#/components/schemas/ProjectStatusResponse)
 		ProjectStatusResponse `yaml:",inline"`
-	} `json:"current_status"`
+	} `json:"current_status,omitempty"`
 
-	// Array of Custom Field Settings (in compact form).
-	CustomFieldSettings *[]CustomFieldSettingCompact `json:"custom_field_settings,omitempty"`
+	CustomFieldSettings []CustomFieldSettingCompact `json:"custom_field_settings,omitempty"`
 
-	// The default view (list, board, calendar, or timeline) of a project.
-	DefaultView *ProjectBaseDefaultView `json:"default_view,omitempty"`
+	DefaultView ProjectBaseDefaultView `json:"default_view,omitempty"`
 
-	// *Deprecated: new integrations should prefer the due_on field.*
-	DueDate *time.Time `json:"due_date"`
+	DueDate time.Time `json:"due_date,omitempty"`
 
-	// The day on which this project is due. This takes a date with format YYYY-MM-DD.
-	DueOn *time.Time `json:"due_on"`
+	DueOn time.Time `json:"due_on,omitempty"`
 
-	// [Opt In](/docs/input-output-options). The notes of the project with formatting as HTML.
-	HtmlNotes *string `json:"html_notes,omitempty"`
+	HtmlNotes string `json:"html_notes,omitempty"`
 
-	// [Opt In](/docs/input-output-options). Determines if the project is a template.
-	IsTemplate *bool `json:"is_template,omitempty"`
+	IsTemplate bool `json:"is_template,omitempty"`
 
-	// Array of users who are members of this project.
-	Members *[]UserCompact `json:"members,omitempty"`
+	Members []UserCompact `json:"members,omitempty"`
 
-	// The time at which this project was last modified.
-	// *Note: This does not currently reflect any changes in associations such as tasks or comments that may have been added or removed from the project.*
-	ModifiedAt *time.Time `json:"modified_at,omitempty"`
+	ModifiedAt time.Time `json:"modified_at,omitempty"`
 
-	// Free-form textual information associated with the project (ie., its description).
-	Notes *string `json:"notes,omitempty"`
+	Notes string `json:"notes,omitempty"`
 
-	// True if the project is public to the organization. If false, do not share this project with other users in this organization without explicitly checking to see if they have access.
-	Public *bool `json:"public,omitempty"`
+	Public bool `json:"public,omitempty"`
 
-	// The day on which work for this project begins, or null if the project has no start date. This takes a date with `YYYY-MM-DD` format. *Note: `due_on` or `due_at` must be present in the request when setting or unsetting the `start_on` parameter. Additionally, start_on and due_on cannot be the same date.*
-	StartOn   *openapi_types.Date `json:"start_on"`
-	Workspace *struct {
+	StartOn openapi_types.Date `json:"start_on,omitempty"`
+
+	Workspace struct {
 		// Embedded struct due to allOf(#/components/schemas/WorkspaceCompact)
 		WorkspaceCompact `yaml:",inline"`
 		// Embedded fields due to inline allOf schema
@@ -1352,25 +1121,16 @@ type ProjectBaseDefaultView string
 
 // ProjectCompact defines model for ProjectCompact.
 type ProjectCompact struct {
-	// Embedded struct due to allOf(#/components/schemas/AsanaResource)
-	AsanaResource `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
-
-	// Name of the project. This is generally a short sentence fragment that fits on a line in the UI for maximum readability. However, it can be longer.
-	Name *string `json:"name,omitempty"`
+	Name string `json:"name,omitempty"`
 }
 
 // ProjectDuplicateRequest defines model for ProjectDuplicateRequest.
 type ProjectDuplicateRequest struct {
+	Include ProjectDuplicateRequestInclude `json:"include,omitempty"`
 
-	// The elements that will be duplicated to the new project. Tasks are always included.
-	Include *ProjectDuplicateRequestInclude `json:"include,omitempty"`
-
-	// The name of the new project.
 	Name string `json:"name"`
 
-	// A dictionary of options to auto-shift dates. `task_dates` must be included to use this option. Requires either `start_on` or `due_on`, but not both.
-	ScheduleDates *struct {
+	ScheduleDates struct {
 
 		// Sets the last due date in the duplicated project to the given date. The rest of the due dates will be offset by the same amount as the due dates in the original project.
 		DueOn *string `json:"due_on,omitempty"`
@@ -1382,8 +1142,7 @@ type ProjectDuplicateRequest struct {
 		StartOn *string `json:"start_on,omitempty"`
 	} `json:"schedule_dates,omitempty"`
 
-	// Sets the team of the new project. If team is not defined, the new project will be in the same team as the the original project.
-	Team *string `json:"team,omitempty"`
+	Team string `json:"team,omitempty"`
 }
 
 // The elements that will be duplicated to the new project. Tasks are always included.
@@ -1394,21 +1153,14 @@ type ProjectMembershipBase ProjectMembershipCompact
 
 // ProjectMembershipCompact defines model for ProjectMembershipCompact.
 type ProjectMembershipCompact struct {
-	// Embedded struct due to allOf(#/components/schemas/AsanaResource)
-	AsanaResource `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
-	User *UserCompact `json:"user,omitempty"`
+	User UserCompact `json:"user,omitempty"`
 }
 
 // ProjectMembershipResponse defines model for ProjectMembershipResponse.
 type ProjectMembershipResponse struct {
-	// Embedded struct due to allOf(#/components/schemas/ProjectMembershipBase)
-	ProjectMembershipBase `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
-	Project *ProjectCompact `json:"project,omitempty"`
+	Project ProjectCompact `json:"project,omitempty"`
 
-	// Whether the user has full access to the project or has comment-only access.
-	WriteAccess *ProjectMembershipResponseWriteAccess `json:"write_access,omitempty"`
+	WriteAccess ProjectMembershipResponseWriteAccess `json:"write_access,omitempty"`
 }
 
 // Whether the user has full access to the project or has comment-only access.
@@ -1416,21 +1168,13 @@ type ProjectMembershipResponseWriteAccess string
 
 // ProjectRequest defines model for ProjectRequest.
 type ProjectRequest struct {
-	// Embedded struct due to allOf(#/components/schemas/ProjectBase)
-	ProjectBase `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
+	CustomFields ProjectRequest_CustomFields `json:"custom_fields,omitempty"`
 
-	// An object where each key is a Custom Field gid and each value is an enum gid, string, or number.
-	CustomFields *ProjectRequest_CustomFields `json:"custom_fields,omitempty"`
+	Followers string `json:"followers,omitempty"`
 
-	// *Create-only*. Comma separated string of users. Followers are a subset of members who receive all notifications for a project, the default notification setting when adding members to a project in-product.
-	Followers *string `json:"followers,omitempty"`
+	Owner string `json:"owner,omitempty"`
 
-	// The current owner of the project, may be null.
-	Owner *string `json:"owner"`
-
-	// *Create-only*. The team that this project is shared with. This field only exists for projects in organizations.
-	Team *string `json:"team,omitempty"`
+	Team string `json:"team,omitempty"`
 }
 
 // An object where each key is a Custom Field gid and each value is an enum gid, string, or number.
@@ -1440,28 +1184,20 @@ type ProjectRequest_CustomFields struct {
 
 // ProjectResponse defines model for ProjectResponse.
 type ProjectResponse struct {
-	// Embedded struct due to allOf(#/components/schemas/ProjectBase)
-	ProjectBase `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
+	CustomFields []CustomFieldCompact `json:"custom_fields,omitempty"`
 
-	// Array of Custom Fields.
-	CustomFields *[]CustomFieldCompact `json:"custom_fields,omitempty"`
+	Followers []UserCompact `json:"followers,omitempty"`
 
-	// Array of users following this project. Followers are a subset of members who receive all notifications for a project, the default notification setting when adding members to a project in-product.
-	Followers *[]UserCompact `json:"followers,omitempty"`
+	Icon ProjectResponseIcon `json:"icon,omitempty"`
 
-	// The icon for a project.
-	Icon *ProjectResponseIcon `json:"icon"`
-
-	// The current owner of the project, may be null.
-	Owner *struct {
+	Owner struct {
 		// Embedded struct due to allOf(#/components/schemas/UserCompact)
 		UserCompact `yaml:",inline"`
-	} `json:"owner"`
+	} `json:"owner,omitempty"`
 
-	// A url that points directly to the object within Asana.
-	PermalinkUrl *string `json:"permalink_url,omitempty"`
-	Team         *struct {
+	PermalinkUrl string `json:"permalink_url,omitempty"`
+
+	Team struct {
 		// Embedded struct due to allOf(#/components/schemas/TeamCompact)
 		TeamCompact `yaml:",inline"`
 		// Embedded fields due to inline allOf schema
@@ -1473,33 +1209,21 @@ type ProjectResponseIcon string
 
 // ProjectSectionInsertRequest defines model for ProjectSectionInsertRequest.
 type ProjectSectionInsertRequest struct {
+	AfterSection string `json:"after_section,omitempty"`
 
-	// Insert the given section immediately after the section specified by this parameter.
-	AfterSection *string `json:"after_section,omitempty"`
+	BeforeSection string `json:"before_section,omitempty"`
 
-	// Insert the given section immediately before the section specified by this parameter.
-	BeforeSection *string `json:"before_section,omitempty"`
-
-	// The project in which to reorder the given section.
 	Project string `json:"project"`
 
-	// The section to reorder.
 	Section string `json:"section"`
 }
 
 // ProjectStatusBase defines model for ProjectStatusBase.
 type ProjectStatusBase struct {
-	// Embedded struct due to allOf(#/components/schemas/ProjectStatusCompact)
-	ProjectStatusCompact `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
-
-	// The color associated with the status update.
 	Color ProjectStatusBaseColor `json:"color"`
 
-	// [Opt In](/docs/input-output-options). The text content of the status update with formatting as HTML.
-	HtmlText *string `json:"html_text,omitempty"`
+	HtmlText string `json:"html_text,omitempty"`
 
-	// The text content of the status update.
 	Text string `json:"text"`
 }
 
@@ -1508,12 +1232,7 @@ type ProjectStatusBaseColor string
 
 // ProjectStatusCompact defines model for ProjectStatusCompact.
 type ProjectStatusCompact struct {
-	// Embedded struct due to allOf(#/components/schemas/AsanaResource)
-	AsanaResource `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
-
-	// The title of the project status update.
-	Title *string `json:"title,omitempty"`
+	Title string `json:"title,omitempty"`
 }
 
 // ProjectStatusRequest defines model for ProjectStatusRequest.
@@ -1521,38 +1240,27 @@ type ProjectStatusRequest ProjectStatusBase
 
 // ProjectStatusResponse defines model for ProjectStatusResponse.
 type ProjectStatusResponse struct {
-	// Embedded struct due to allOf(#/components/schemas/ProjectStatusBase)
-	ProjectStatusBase `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
-	Author *UserCompact `json:"author,omitempty"`
+	Author UserCompact `json:"author,omitempty"`
 
-	// The time at which this resource was created.
-	CreatedAt *time.Time   `json:"created_at,omitempty"`
-	CreatedBy *UserCompact `json:"created_by,omitempty"`
+	CreatedAt time.Time `json:"created_at,omitempty"`
 
-	// The time at which this project status was last modified.
-	// *Note: This does not currently reflect any changes in associations such as comments that may have been added or removed from the project status.*
-	ModifiedAt *time.Time `json:"modified_at,omitempty"`
+	CreatedBy UserCompact `json:"created_by,omitempty"`
+
+	ModifiedAt time.Time `json:"modified_at,omitempty"`
 }
 
 // RemoveCustomFieldSettingRequest defines model for RemoveCustomFieldSettingRequest.
 type RemoveCustomFieldSettingRequest struct {
-
-	// The custom field to remove from this portfolio.
 	CustomField string `json:"custom_field"`
 }
 
 // RemoveFollowersRequest defines model for RemoveFollowersRequest.
 type RemoveFollowersRequest struct {
-
-	// An array of strings identifying users. These can either be the string "me", an email, or the gid of a user.
 	Followers string `json:"followers"`
 }
 
 // RemoveMembersRequest defines model for RemoveMembersRequest.
 type RemoveMembersRequest struct {
-
-	// An array of strings identifying users. These can either be the string "me", an email, or the gid of a user.
 	Members string `json:"members"`
 }
 
@@ -1561,80 +1269,51 @@ type SectionBase SectionCompact
 
 // SectionCompact defines model for SectionCompact.
 type SectionCompact struct {
-	// Embedded struct due to allOf(#/components/schemas/AsanaResource)
-	AsanaResource `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
-
-	// The name of the section (i.e. the text displayed as the section header).
-	Name *string `json:"name,omitempty"`
+	Name string `json:"name,omitempty"`
 }
 
 // SectionRequest defines model for SectionRequest.
 type SectionRequest struct {
+	InsertAfter string `json:"insert_after,omitempty"`
 
-	// An existing section within this project after which the added section should be inserted. Cannot be provided together with insert_before.
-	InsertAfter *string `json:"insert_after,omitempty"`
+	InsertBefore string `json:"insert_before,omitempty"`
 
-	// An existing section within this project before which the added section should be inserted. Cannot be provided together with insert_after.
-	InsertBefore *string `json:"insert_before,omitempty"`
-
-	// The text to be displayed as the section name. This cannot be an empty string.
 	Name string `json:"name"`
 
-	// *Create-Only* The project to create the section in
 	Project string `json:"project"`
 }
 
 // SectionResponse defines model for SectionResponse.
 type SectionResponse struct {
-	// Embedded struct due to allOf(#/components/schemas/SectionBase)
-	SectionBase `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
+	CreatedAt time.Time `json:"created_at,omitempty"`
 
-	// The time at which this resource was created.
-	CreatedAt *time.Time      `json:"created_at,omitempty"`
-	Project   *ProjectCompact `json:"project,omitempty"`
+	Project ProjectCompact `json:"project,omitempty"`
 
-	// *Deprecated - please use project instead*
-	Projects *[]ProjectCompact `json:"projects,omitempty"`
+	Projects []ProjectCompact `json:"projects,omitempty"`
 }
 
 // SectionTaskInsertRequest defines model for SectionTaskInsertRequest.
 type SectionTaskInsertRequest struct {
+	InsertAfter string `json:"insert_after,omitempty"`
 
-	// An existing task within this section after which the added task should be inserted. Cannot be provided together with insert_before.
-	InsertAfter *string `json:"insert_after,omitempty"`
+	InsertBefore string `json:"insert_before,omitempty"`
 
-	// An existing task within this section before which the added task should be inserted. Cannot be provided together with insert_after.
-	InsertBefore *string `json:"insert_before,omitempty"`
-
-	// The task to add to this section.
 	Task string `json:"task"`
 }
 
 // StoryBase defines model for StoryBase.
 type StoryBase struct {
-	// Embedded struct due to allOf(#/components/schemas/AsanaResource)
-	AsanaResource `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
+	CreatedAt time.Time `json:"created_at,omitempty"`
 
-	// The time at which this resource was created.
-	CreatedAt *time.Time `json:"created_at,omitempty"`
+	HtmlText string `json:"html_text,omitempty"`
 
-	// [Opt In](/docs/input-output-options). HTML formatted text for a comment. This will not include the name of the creator.
-	HtmlText *string `json:"html_text,omitempty"`
+	IsPinned bool `json:"is_pinned,omitempty"`
 
-	// *Conditional*. Whether the story should be pinned on the resource.
-	IsPinned *bool `json:"is_pinned,omitempty"`
+	ResourceSubtype string `json:"resource_subtype,omitempty"`
 
-	// The subtype of this resource. Different subtypes retain many of the same fields and behavior, but may render differently in Asana or represent resources with different semantic meaning.
-	ResourceSubtype *string `json:"resource_subtype,omitempty"`
+	StickerName StoryBaseStickerName `json:"sticker_name,omitempty"`
 
-	// The name of the sticker in this story. `null` if there is no sticker.
-	StickerName *StoryBaseStickerName `json:"sticker_name,omitempty"`
-
-	// The plain text of the comment to add. Cannot be used with html_text.
-	Text *string `json:"text,omitempty"`
+	Text string `json:"text,omitempty"`
 }
 
 // The name of the sticker in this story. `null` if there is no sticker.
@@ -1642,22 +1321,13 @@ type StoryBaseStickerName string
 
 // StoryCompact defines model for StoryCompact.
 type StoryCompact struct {
-	// Embedded struct due to allOf(#/components/schemas/AsanaResource)
-	AsanaResource `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
+	CreatedAt time.Time `json:"created_at,omitempty"`
 
-	// The time at which this resource was created.
-	CreatedAt *time.Time   `json:"created_at,omitempty"`
-	CreatedBy *UserCompact `json:"created_by,omitempty"`
+	CreatedBy UserCompact `json:"created_by,omitempty"`
 
-	// The subtype of this resource. Different subtypes retain many of the same fields and behavior, but may render differently in Asana or represent resources with different semantic meaning.
-	ResourceSubtype *string `json:"resource_subtype,omitempty"`
+	ResourceSubtype string `json:"resource_subtype,omitempty"`
 
-	// *Create-only*. Human-readable text for the story or comment.
-	// This will not include the name of the creator.
-	// *Note: This is not guaranteed to be stable for a given type of story. For example, text for a reassignment may not always say “assigned to …” as the text for a story can both be edited and change based on the language settings of the user making the request.*
-	// Use the `resource_subtype` property to discover the action that created the story.
-	Text *string `json:"text,omitempty"`
+	Text string `json:"text,omitempty"`
 }
 
 // StoryRequest defines model for StoryRequest.
@@ -1665,106 +1335,86 @@ type StoryRequest StoryBase
 
 // StoryResponse defines model for StoryResponse.
 type StoryResponse struct {
-	// Embedded struct due to allOf(#/components/schemas/StoryBase)
-	StoryBase `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
-	Assignee       *UserCompact        `json:"assignee,omitempty"`
-	CreatedBy      *UserCompact        `json:"created_by,omitempty"`
-	CustomField    *CustomFieldCompact `json:"custom_field,omitempty"`
-	Dependency     *TaskCompact        `json:"dependency,omitempty"`
-	DuplicateOf    *TaskCompact        `json:"duplicate_of,omitempty"`
-	DuplicatedFrom *TaskCompact        `json:"duplicated_from,omitempty"`
-	Follower       *UserCompact        `json:"follower,omitempty"`
+	Assignee UserCompact `json:"assignee,omitempty"`
 
-	// *Deprecated - please use likes instead*
-	// *Conditional*. True if the story is hearted by the authorized user, false if not.
-	Hearted *bool `json:"hearted,omitempty"`
+	CreatedBy UserCompact `json:"created_by,omitempty"`
 
-	// *Deprecated - please use likes instead*
-	//
-	// *Conditional*. Array of likes for users who have hearted this story.
-	Hearts *[]Like `json:"hearts,omitempty"`
+	CustomField CustomFieldCompact `json:"custom_field,omitempty"`
 
-	// *Conditional*. Whether the text of the story has been edited after creation.
-	IsEdited *bool `json:"is_edited,omitempty"`
+	Dependency TaskCompact `json:"dependency,omitempty"`
 
-	// *Conditional*. True if the story is liked by the authorized user, false if not.
-	Liked *bool `json:"liked,omitempty"`
+	DuplicateOf TaskCompact `json:"duplicate_of,omitempty"`
 
-	// *Conditional*. Array of likes for users who have liked this story.
-	Likes *[]Like `json:"likes,omitempty"`
+	DuplicatedFrom TaskCompact `json:"duplicated_from,omitempty"`
 
-	// *Conditional*
-	NewApprovalStatus *string `json:"new_approval_status,omitempty"`
+	Follower UserCompact `json:"follower,omitempty"`
 
-	// *Conditional*
-	NewDates     *StoryResponseDates `json:"new_dates,omitempty"`
-	NewEnumValue *EnumOption         `json:"new_enum_value,omitempty"`
+	Hearted bool `json:"hearted,omitempty"`
 
-	// *Conditional*
-	NewMultiEnumValues *[]EnumOption `json:"new_multi_enum_values,omitempty"`
+	Hearts []Like `json:"hearts,omitempty"`
 
-	// *Conditional*
-	NewName *string `json:"new_name,omitempty"`
+	IsEdited bool `json:"is_edited,omitempty"`
 
-	// *Conditional*
-	NewNumberValue *int `json:"new_number_value,omitempty"`
+	Liked bool `json:"liked,omitempty"`
 
-	// *Conditional*
-	NewResourceSubtype *string         `json:"new_resource_subtype,omitempty"`
-	NewSection         *SectionCompact `json:"new_section,omitempty"`
+	Likes []Like `json:"likes,omitempty"`
 
-	// *Conditional*
-	NewTextValue *string `json:"new_text_value,omitempty"`
+	NewApprovalStatus string `json:"new_approval_status,omitempty"`
 
-	// *Deprecated - please use likes instead*
-	//
-	// *Conditional*. The number of users who have hearted this story.
-	NumHearts *int `json:"num_hearts,omitempty"`
+	NewDates StoryResponseDates `json:"new_dates,omitempty"`
 
-	// *Conditional*. The number of users who have liked this story.
-	NumLikes *int `json:"num_likes,omitempty"`
+	NewEnumValue EnumOption `json:"new_enum_value,omitempty"`
 
-	// *Conditional*
-	OldApprovalStatus *string `json:"old_approval_status,omitempty"`
+	NewMultiEnumValues []EnumOption `json:"new_multi_enum_values,omitempty"`
 
-	// *Conditional*
-	OldDates     *StoryResponseDates `json:"old_dates,omitempty"`
-	OldEnumValue *EnumOption         `json:"old_enum_value,omitempty"`
+	NewName string `json:"new_name,omitempty"`
 
-	// *Conditional*
-	OldMultiEnumValues *[]EnumOption `json:"old_multi_enum_values,omitempty"`
+	NewNumberValue int `json:"new_number_value,omitempty"`
 
-	// *Conditional*'
-	OldName *string `json:"old_name,omitempty"`
+	NewResourceSubtype string `json:"new_resource_subtype,omitempty"`
 
-	// *Conditional*
-	OldNumberValue *int `json:"old_number_value,omitempty"`
+	NewSection SectionCompact `json:"new_section,omitempty"`
 
-	// *Conditional*
-	OldResourceSubtype *string         `json:"old_resource_subtype,omitempty"`
-	OldSection         *SectionCompact `json:"old_section,omitempty"`
+	NewTextValue string `json:"new_text_value,omitempty"`
 
-	// *Conditional*
-	OldTextValue *string `json:"old_text_value,omitempty"`
+	NumHearts int `json:"num_hearts,omitempty"`
 
-	// *Conditional*. A collection of previews to be displayed in the story.
-	//
-	// *Note: This property only exists for comment stories.*
-	Previews *[]Preview      `json:"previews,omitempty"`
-	Project  *ProjectCompact `json:"project,omitempty"`
+	NumLikes int `json:"num_likes,omitempty"`
 
-	// The component of the Asana product the user used to trigger the story.
-	Source *StoryResponseSource `json:"source,omitempty"`
-	Story  *StoryCompact        `json:"story,omitempty"`
-	Tag    *TagCompact          `json:"tag,omitempty"`
+	OldApprovalStatus string `json:"old_approval_status,omitempty"`
 
-	// The object this story is associated with. Currently may only be a task.
-	Target *struct {
+	OldDates StoryResponseDates `json:"old_dates,omitempty"`
+
+	OldEnumValue EnumOption `json:"old_enum_value,omitempty"`
+
+	OldMultiEnumValues []EnumOption `json:"old_multi_enum_values,omitempty"`
+
+	OldName string `json:"old_name,omitempty"`
+
+	OldNumberValue int `json:"old_number_value,omitempty"`
+
+	OldResourceSubtype string `json:"old_resource_subtype,omitempty"`
+
+	OldSection SectionCompact `json:"old_section,omitempty"`
+
+	OldTextValue string `json:"old_text_value,omitempty"`
+
+	Previews []Preview `json:"previews,omitempty"`
+
+	Project ProjectCompact `json:"project,omitempty"`
+
+	Source StoryResponseSource `json:"source,omitempty"`
+
+	Story StoryCompact `json:"story,omitempty"`
+
+	Tag TagCompact `json:"tag,omitempty"`
+
+	Target struct {
 		Gid  *string `json:"gid,omitempty"`
 		Name *string `json:"name,omitempty"`
 	} `json:"target,omitempty"`
-	Task *TaskCompact `json:"task,omitempty"`
+
+	Task TaskCompact `json:"task,omitempty"`
 }
 
 // The component of the Asana product the user used to trigger the story.
@@ -1772,19 +1422,16 @@ type StoryResponseSource string
 
 // *Conditional*
 type StoryResponseDates struct {
-	DueAt   *time.Time          `json:"due_at,omitempty"`
-	DueOn   *openapi_types.Date `json:"due_on,omitempty"`
-	StartOn *openapi_types.Date `json:"start_on,omitempty"`
+	DueAt time.Time `json:"due_at,omitempty"`
+
+	DueOn openapi_types.Date `json:"due_on,omitempty"`
+
+	StartOn openapi_types.Date `json:"start_on,omitempty"`
 }
 
 // TagBase defines model for TagBase.
 type TagBase struct {
-	// Embedded struct due to allOf(#/components/schemas/TagCompact)
-	TagCompact `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
-
-	// Color of the tag.
-	Color *TagBaseColor `json:"color,omitempty"`
+	Color TagBaseColor `json:"color,omitempty"`
 }
 
 // Color of the tag.
@@ -1792,165 +1439,105 @@ type TagBaseColor string
 
 // TagCompact defines model for TagCompact.
 type TagCompact struct {
-	// Embedded struct due to allOf(#/components/schemas/AsanaResource)
-	AsanaResource `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
-
-	// Name of the tag. This is generally a short sentence fragment that fits on a line in the UI for maximum readability. However, it can be longer.
-	Name *string `json:"name,omitempty"`
+	Name string `json:"name,omitempty"`
 }
 
 // TagRequest defines model for TagRequest.
 type TagRequest struct {
-	// Embedded struct due to allOf(#/components/schemas/TagBase)
-	TagBase `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
+	Followers []string `json:"followers,omitempty"`
 
-	// An array of strings identifying users. These can either be the string "me", an email, or the gid of a user.
-	Followers *[]string `json:"followers,omitempty"`
-
-	// Gid of an object.
-	Workspace *string `json:"workspace,omitempty"`
+	Workspace string `json:"workspace,omitempty"`
 }
 
 // TagResponse defines model for TagResponse.
 type TagResponse struct {
-	// Embedded struct due to allOf(#/components/schemas/TagBase)
-	TagBase `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
+	Followers []UserCompact `json:"followers,omitempty"`
 
-	// Array of users following this tag.
-	Followers *[]UserCompact `json:"followers,omitempty"`
+	PermalinkUrl string `json:"permalink_url,omitempty"`
 
-	// A url that points directly to the object within Asana.
-	PermalinkUrl *string           `json:"permalink_url,omitempty"`
-	Workspace    *WorkspaceCompact `json:"workspace,omitempty"`
+	Workspace WorkspaceCompact `json:"workspace,omitempty"`
 }
 
 // TaskAddFollowersRequest defines model for TaskAddFollowersRequest.
 type TaskAddFollowersRequest struct {
-
-	// An array of strings identifying users. These can either be the string "me", an email, or the gid of a user.
 	Followers []string `json:"followers"`
 }
 
 // TaskAddProjectRequest defines model for TaskAddProjectRequest.
 type TaskAddProjectRequest struct {
+	InsertAfter string `json:"insert_after,omitempty"`
 
-	// A task in the project to insert the task after, or `null` to insert at the beginning of the list.
-	InsertAfter *string `json:"insert_after"`
+	InsertBefore string `json:"insert_before,omitempty"`
 
-	// A task in the project to insert the task before, or `null` to insert at the end of the list.
-	InsertBefore *string `json:"insert_before"`
-
-	// The project to add the task to.
 	Project string `json:"project"`
 
-	// A section in the project to insert the task into. The task will be inserted at the bottom of the section.
-	Section *string `json:"section"`
+	Section string `json:"section,omitempty"`
 }
 
 // TaskAddTagRequest defines model for TaskAddTagRequest.
 type TaskAddTagRequest struct {
-
-	// The tag to add to the task.
 	Tag string `json:"tag"`
 }
 
 // TaskBase defines model for TaskBase.
 type TaskBase struct {
-	// Embedded struct due to allOf(#/components/schemas/TaskCompact)
-	TaskCompact `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
+	ApprovalStatus TaskBaseApprovalStatus `json:"approval_status,omitempty"`
 
-	// *Conditional* Reflects the approval status of this task. This field is kept in sync with `completed`, meaning `pending` translates to false while `approved`, `rejected`, and `changes_requested` translate to true. If you set completed to true, this field will be set to `approved`.
-	ApprovalStatus *TaskBaseApprovalStatus `json:"approval_status,omitempty"`
+	AssigneeStatus TaskBaseAssigneeStatus `json:"assignee_status,omitempty"`
 
-	// *Deprecated* Scheduling status of this task for the user it is assigned to. This field can only be set if the assignee is non-null. Setting this field to "inbox" or "upcoming" inserts it at the top of the section, while the other options will insert at the bottom.
-	AssigneeStatus *TaskBaseAssigneeStatus `json:"assignee_status,omitempty"`
+	Completed bool `json:"completed,omitempty"`
 
-	// True if the task is currently marked complete, false if not.
-	Completed *bool `json:"completed,omitempty"`
+	CompletedAt time.Time `json:"completed_at,omitempty"`
 
-	// The time at which this task was completed, or null if the task is incomplete.
-	CompletedAt *time.Time   `json:"completed_at"`
-	CompletedBy *UserCompact `json:"completed_by,omitempty"`
+	CompletedBy UserCompact `json:"completed_by,omitempty"`
 
-	// The time at which this resource was created.
-	CreatedAt *time.Time `json:"created_at,omitempty"`
+	CreatedAt time.Time `json:"created_at,omitempty"`
 
-	// [Opt In](/docs/input-output-options). Array of resources referencing tasks that this task depends on. The objects contain only the gid of the dependency.
-	Dependencies *[]AsanaResource `json:"dependencies,omitempty"`
+	Dependencies []AsanaResource `json:"dependencies,omitempty"`
 
-	// [Opt In](/docs/input-output-options). Array of resources referencing tasks that depend on this task. The objects contain only the ID of the dependent.
-	Dependents *[]AsanaResource `json:"dependents,omitempty"`
+	Dependents []AsanaResource `json:"dependents,omitempty"`
 
-	// The UTC date and time on which this task is due, or null if the task has no due time. This takes an ISO 8601 date string in UTC and should not be used together with `due_on`.
-	DueAt *openapi_types.Date `json:"due_at"`
+	DueAt openapi_types.Date `json:"due_at,omitempty"`
 
-	// The localized date on which this task is due, or null if the task has no due date. This takes a date with `YYYY-MM-DD` format and should not be used together with due_at.
-	DueOn *openapi_types.Date `json:"due_on"`
+	DueOn openapi_types.Date `json:"due_on,omitempty"`
 
-	// *OAuth Required*. *Conditional*. This field is returned only if external values are set or included by using [Opt In] (/docs/input-output-options).
-	// The external field allows you to store app-specific metadata on tasks, including a gid that can be used to retrieve tasks and a data blob that can store app-specific character strings. Note that you will need to authenticate with Oauth to access or modify this data. Once an external gid is set, you can use the notation `external:custom_gid` to reference your object anywhere in the API where you may use the original object gid. See the page on Custom External Data for more details.
-	External *struct {
+	External struct {
 		Data *string `json:"data,omitempty"`
 		Gid  *string `json:"gid,omitempty"`
 	} `json:"external,omitempty"`
 
-	// *Deprecated - please use liked instead* True if the task is hearted by the authorized user, false if not.
-	Hearted *bool `json:"hearted,omitempty"`
+	Hearted bool `json:"hearted,omitempty"`
 
-	// *Deprecated - please use likes instead* Array of likes for users who have hearted this task.
-	Hearts *[]Like `json:"hearts,omitempty"`
+	Hearts []Like `json:"hearts,omitempty"`
 
-	// [Opt In](/docs/input-output-options). The notes of the text with formatting as HTML.
-	HtmlNotes *string `json:"html_notes,omitempty"`
+	HtmlNotes string `json:"html_notes,omitempty"`
 
-	// [Opt In](/docs/input-output-options). In some contexts tasks can be rendered as a visual separator; for instance, subtasks can appear similar to [sections](/docs/asana-sections) without being true `section` objects. If a `task` object is rendered this way in any context it will have the property `is_rendered_as_separator` set to `true`.
-	IsRenderedAsSeparator *bool `json:"is_rendered_as_separator,omitempty"`
+	IsRenderedAsSeparator bool `json:"is_rendered_as_separator,omitempty"`
 
-	// True if the task is liked by the authorized user, false if not.
-	Liked *bool `json:"liked,omitempty"`
+	Liked bool `json:"liked,omitempty"`
 
-	// Array of likes for users who have liked this task.
-	Likes *[]Like `json:"likes,omitempty"`
+	Likes []Like `json:"likes,omitempty"`
 
-	// *Create-only*. Array of projects this task is associated with and the section it is in. At task creation time, this array can be used to add the task to specific sections. After task creation, these associations can be modified using the `addProject` and `removeProject` endpoints. Note that over time, more types of memberships may be added to this property.
-	Memberships *[]struct {
+	Memberships []struct {
 		Project *ProjectCompact `json:"project,omitempty"`
 		Section *SectionCompact `json:"section,omitempty"`
 	} `json:"memberships,omitempty"`
 
-	// The time at which this task was last modified.
-	//
-	// *Note: This does not currently reflect any changes in
-	// associations such as projects or comments that may have been
-	// added or removed from the task.*
-	ModifiedAt *time.Time `json:"modified_at,omitempty"`
+	ModifiedAt time.Time `json:"modified_at,omitempty"`
 
-	// Name of the task. This is generally a short sentence fragment that fits on a line in the UI for maximum readability. However, it can be longer.
-	Name *string `json:"name,omitempty"`
+	Name string `json:"name,omitempty"`
 
-	// Free-form textual information associated with the task (i.e. its description).
-	Notes *string `json:"notes,omitempty"`
+	Notes string `json:"notes,omitempty"`
 
-	// *Deprecated - please use likes instead* The number of users who have hearted this task.
-	NumHearts *int `json:"num_hearts,omitempty"`
+	NumHearts int `json:"num_hearts,omitempty"`
 
-	// The number of users who have liked this task.
-	NumLikes *int `json:"num_likes,omitempty"`
+	NumLikes int `json:"num_likes,omitempty"`
 
-	// [Opt In](/docs/input-output-options). The number of subtasks on this task.
-	NumSubtasks *int `json:"num_subtasks,omitempty"`
+	NumSubtasks int `json:"num_subtasks,omitempty"`
 
-	// The subtype of this resource. Different subtypes retain many of the same fields and behavior, but may render differently in Asana or represent resources with different semantic meaning.
-	// The resource_subtype `milestone` represent a single moment in time. This means tasks with this subtype cannot have a start_date.
-	ResourceSubtype *TaskBaseResourceSubtype `json:"resource_subtype,omitempty"`
+	ResourceSubtype TaskBaseResourceSubtype `json:"resource_subtype,omitempty"`
 
-	// The day on which work begins for the task , or null if the task has no start date. This takes a date with `YYYY-MM-DD` format.
-	// *Note: `due_on` or `due_at` must be present in the request when setting or unsetting the `start_on` parameter.*
-	StartOn *openapi_types.Date `json:"start_on"`
+	StartOn openapi_types.Date `json:"start_on,omitempty"`
 }
 
 // *Conditional* Reflects the approval status of this task. This field is kept in sync with `completed`, meaning `pending` translates to false while `approved`, `rejected`, and `changes_requested` translate to true. If you set completed to true, this field will be set to `approved`.
@@ -1965,44 +1552,29 @@ type TaskBaseResourceSubtype string
 
 // TaskCompact defines model for TaskCompact.
 type TaskCompact struct {
-	// Embedded struct due to allOf(#/components/schemas/AsanaResource)
-	AsanaResource `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
-
-	// The name of the task.
-	Name *string `json:"name,omitempty"`
+	Name string `json:"name,omitempty"`
 }
 
 // A response object returned from the task count endpoint.
 type TaskCountResponse struct {
+	NumCompletedMilestones int `json:"num_completed_milestones,omitempty"`
 
-	// The number of completed milestones in a project.
-	NumCompletedMilestones *int `json:"num_completed_milestones,omitempty"`
+	NumCompletedTasks int `json:"num_completed_tasks,omitempty"`
 
-	// The number of completed tasks in a project.
-	NumCompletedTasks *int `json:"num_completed_tasks,omitempty"`
+	NumIncompleteMilestones int `json:"num_incomplete_milestones,omitempty"`
 
-	// The number of incomplete milestones in a project.
-	NumIncompleteMilestones *int `json:"num_incomplete_milestones,omitempty"`
+	NumIncompleteTasks int `json:"num_incomplete_tasks,omitempty"`
 
-	// The number of incomplete tasks in a project.
-	NumIncompleteTasks *int `json:"num_incomplete_tasks,omitempty"`
+	NumMilestones int `json:"num_milestones,omitempty"`
 
-	// The number of milestones in a project.
-	NumMilestones *int `json:"num_milestones,omitempty"`
-
-	// The number of tasks in a project.
-	NumTasks *int `json:"num_tasks,omitempty"`
+	NumTasks int `json:"num_tasks,omitempty"`
 }
 
 // TaskDuplicateRequest defines model for TaskDuplicateRequest.
 type TaskDuplicateRequest struct {
+	Include TaskDuplicateRequestInclude `json:"include,omitempty"`
 
-	// The fields that will be duplicated to the new task.
-	Include *TaskDuplicateRequestInclude `json:"include,omitempty"`
-
-	// The name of the new task.
-	Name *string `json:"name,omitempty"`
+	Name string `json:"name,omitempty"`
 }
 
 // The fields that will be duplicated to the new task.
@@ -2010,57 +1582,41 @@ type TaskDuplicateRequestInclude string
 
 // TaskRemoveFollowersRequest defines model for TaskRemoveFollowersRequest.
 type TaskRemoveFollowersRequest struct {
-
-	// An array of strings identifying users. These can either be the string "me", an email, or the gid of a user.
 	Followers []string `json:"followers"`
 }
 
 // TaskRemoveProjectRequest defines model for TaskRemoveProjectRequest.
 type TaskRemoveProjectRequest struct {
-
-	// The project to remove the task from.
 	Project string `json:"project"`
 }
 
 // TaskRemoveTagRequest defines model for TaskRemoveTagRequest.
 type TaskRemoveTagRequest struct {
-
-	// The tag to remove from the task.
 	Tag string `json:"tag"`
 }
 
 // TaskRequest defines model for TaskRequest.
 type TaskRequest struct {
-	// Embedded struct due to allOf(#/components/schemas/TaskBase)
-	TaskBase `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
+	Assignee string `json:"assignee,omitempty"`
 
-	// Gid of a user.
-	Assignee        *string `json:"assignee"`
-	AssigneeSection *struct {
+	AssigneeSection struct {
 		// Embedded struct due to allOf(#/components/schemas/SectionCompact)
 		SectionCompact `yaml:",inline"`
 		// Embedded fields due to inline allOf schema
 		// Embedded fields due to inline allOf schema
-	} `json:"assignee_section"`
+	} `json:"assignee_section,omitempty"`
 
-	// An object where each key is a Custom Field gid and each value is an enum gid, string, or number.
-	CustomFields *TaskRequest_CustomFields `json:"custom_fields,omitempty"`
+	CustomFields TaskRequest_CustomFields `json:"custom_fields,omitempty"`
 
-	// *Create-Only* An array of strings identifying users. These can either be the string "me", an email, or the gid of a user. In order to change followers on an existing task use `addFollowers` and `removeFollowers`.
-	Followers *[]string `json:"followers,omitempty"`
+	Followers []string `json:"followers,omitempty"`
 
-	// Gid of a task.
-	Parent *string `json:"parent"`
+	Parent string `json:"parent,omitempty"`
 
-	// *Create-Only* Array of project gids. In order to change projects on an existing task use `addProject` and `removeProject`.
-	Projects *[]string `json:"projects,omitempty"`
+	Projects []string `json:"projects,omitempty"`
 
-	// *Create-Only* Array of tag gids. In order to change tags on an existing task use `addTag` and `removeTag`.
-	Tags *[]string `json:"tags,omitempty"`
+	Tags []string `json:"tags,omitempty"`
 
-	// Gid of a workspace.
-	Workspace *string `json:"workspace,omitempty"`
+	Workspace string `json:"workspace,omitempty"`
 }
 
 // An object where each key is a Custom Field gid and each value is an enum gid, string, or number.
@@ -2070,39 +1626,34 @@ type TaskRequest_CustomFields struct {
 
 // TaskResponse defines model for TaskResponse.
 type TaskResponse struct {
-	// Embedded struct due to allOf(#/components/schemas/TaskBase)
-	TaskBase `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
-	Assignee *struct {
+	Assignee struct {
 		// Embedded struct due to allOf(#/components/schemas/UserCompact)
 		UserCompact `yaml:",inline"`
-	} `json:"assignee"`
-	AssigneeSection *struct {
+	} `json:"assignee,omitempty"`
+
+	AssigneeSection struct {
 		// Embedded struct due to allOf(#/components/schemas/SectionCompact)
 		SectionCompact `yaml:",inline"`
 		// Embedded fields due to inline allOf schema
-	} `json:"assignee_section"`
+	} `json:"assignee_section,omitempty"`
 
-	// Array of custom field values applied to the task. These represent the custom field values recorded on this project for a particular custom field. For example, these custom field values will contain an `enum_value` property for custom fields of type `enum`, a `text_value` property for custom fields of type `text`, and so on. Please note that the `gid` returned on each custom field value *is identical* to the `gid` of the custom field, which allows referencing the custom field metadata through the `/custom_fields/custom_field-gid` endpoint.
-	CustomFields *[]CustomFieldResponse `json:"custom_fields,omitempty"`
+	CustomFields []CustomFieldResponse `json:"custom_fields,omitempty"`
 
-	// Array of users following this task.
-	Followers *[]UserCompact `json:"followers,omitempty"`
-	Parent    *struct {
+	Followers []UserCompact `json:"followers,omitempty"`
+
+	Parent struct {
 		// Embedded struct due to allOf(#/components/schemas/TaskCompact)
 		TaskCompact `yaml:",inline"`
 		// Embedded fields due to inline allOf schema
 	} `json:"parent,omitempty"`
 
-	// A url that points directly to the object within Asana.
-	PermalinkUrl *string `json:"permalink_url,omitempty"`
+	PermalinkUrl string `json:"permalink_url,omitempty"`
 
-	// *Create-only.* Array of projects this task is associated with. At task creation time, this array can be used to add the task to many projects at once. After task creation, these associations can be modified using the addProject and removeProject endpoints.
-	Projects *[]ProjectCompact `json:"projects,omitempty"`
+	Projects []ProjectCompact `json:"projects,omitempty"`
 
-	// Array of tags associated with this task. In order to change tags on an existing task use `addTag` and `removeTag`.
-	Tags      *[]TagCompact `json:"tags,omitempty"`
-	Workspace *struct {
+	Tags []TagCompact `json:"tags,omitempty"`
+
+	Workspace struct {
 		// Embedded struct due to allOf(#/components/schemas/WorkspaceCompact)
 		WorkspaceCompact `yaml:",inline"`
 		// Embedded fields due to inline allOf schema
@@ -2111,22 +1662,16 @@ type TaskResponse struct {
 
 // TaskSetParentRequest defines model for TaskSetParentRequest.
 type TaskSetParentRequest struct {
+	InsertAfter string `json:"insert_after,omitempty"`
 
-	// A subtask of the parent to insert the task after, or `null` to insert at the beginning of the list.
-	InsertAfter *string `json:"insert_after,omitempty"`
+	InsertBefore string `json:"insert_before,omitempty"`
 
-	// A subtask of the parent to insert the task before, or `null` to insert at the end of the list.
-	InsertBefore *string `json:"insert_before,omitempty"`
-
-	// The new parent of the task, or `null` for no parent.
 	Parent string `json:"parent"`
 }
 
 // A user identification object for specification with the addUser/removeUser endpoints.
 type TeamAddUserRequest struct {
-
-	// A string identifying a user. This can either be the string "me", an email, or the gid of a user.
-	User *string `json:"user,omitempty"`
+	User string `json:"user,omitempty"`
 }
 
 // TeamBase defines model for TeamBase.
@@ -2134,12 +1679,7 @@ type TeamBase TeamCompact
 
 // TeamCompact defines model for TeamCompact.
 type TeamCompact struct {
-	// Embedded struct due to allOf(#/components/schemas/AsanaResource)
-	AsanaResource `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
-
-	// The name of the team.
-	Name *string `json:"name,omitempty"`
+	Name string `json:"name,omitempty"`
 }
 
 // TeamMembershipBase defines model for TeamMembershipBase.
@@ -2147,14 +1687,11 @@ type TeamMembershipBase TeamMembershipCompact
 
 // TeamMembershipCompact defines model for TeamMembershipCompact.
 type TeamMembershipCompact struct {
-	// Embedded struct due to allOf(#/components/schemas/AsanaResource)
-	AsanaResource `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
+	IsGuest bool `json:"is_guest,omitempty"`
 
-	// Describes if the user is a guest in the team.
-	IsGuest *bool        `json:"is_guest,omitempty"`
-	Team    *TeamCompact `json:"team,omitempty"`
-	User    *UserCompact `json:"user,omitempty"`
+	Team TeamCompact `json:"team,omitempty"`
+
+	User UserCompact `json:"user,omitempty"`
 }
 
 // TeamMembershipResponse defines model for TeamMembershipResponse.
@@ -2162,46 +1699,31 @@ type TeamMembershipResponse TeamMembershipBase
 
 // A user identification object for specification with the addUser/removeUser endpoints.
 type TeamRemoveUserRequest struct {
-
-	// A string identifying a user. This can either be the string "me", an email, or the gid of a user.
-	User *string `json:"user,omitempty"`
+	User string `json:"user,omitempty"`
 }
 
 // TeamRequest defines model for TeamRequest.
 type TeamRequest struct {
-	// Embedded struct due to allOf(#/components/schemas/TeamBase)
-	TeamBase `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
+	Description string `json:"description,omitempty"`
 
-	// The description of the team.
-	Description *string `json:"description,omitempty"`
+	HtmlDescription string `json:"html_description,omitempty"`
 
-	// The description of the team with formatting as HTML.
-	HtmlDescription *string `json:"html_description,omitempty"`
-
-	// The organization/workspace the team belongs to.
-	Organization *string `json:"organization,omitempty"`
+	Organization string `json:"organization,omitempty"`
 }
 
 // TeamResponse defines model for TeamResponse.
 type TeamResponse struct {
-	// Embedded struct due to allOf(#/components/schemas/TeamBase)
-	TeamBase `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
+	Description string `json:"description,omitempty"`
 
-	// [Opt In](/docs/input-output-options). The description of the team.
-	Description *string `json:"description,omitempty"`
+	HtmlDescription string `json:"html_description,omitempty"`
 
-	// [Opt In](/docs/input-output-options). The description of the team with formatting as HTML.
-	HtmlDescription *string `json:"html_description,omitempty"`
-	Organization    *struct {
+	Organization struct {
 		// Embedded struct due to allOf(#/components/schemas/WorkspaceCompact)
 		WorkspaceCompact `yaml:",inline"`
 		// Embedded fields due to inline allOf schema
 	} `json:"organization,omitempty"`
 
-	// A url that points directly to the object within Asana.
-	PermalinkUrl *string `json:"permalink_url,omitempty"`
+	PermalinkUrl string `json:"permalink_url,omitempty"`
 }
 
 // UserBase defines model for UserBase.
@@ -2209,35 +1731,22 @@ type UserBase UserCompact
 
 // UserCompact defines model for UserCompact.
 type UserCompact struct {
-	// Embedded struct due to allOf(#/components/schemas/AsanaResource)
-	AsanaResource `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
-
-	// *Read-only except when same user as requester*. The user’s name.
-	Name *string `json:"name,omitempty"`
+	Name string `json:"name,omitempty"`
 }
 
 // UserResponse defines model for UserResponse.
 type UserResponse struct {
-	// Embedded struct due to allOf(#/components/schemas/UserBase)
-	UserBase `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
+	Email openapi_types.Email `json:"email,omitempty"`
 
-	// The user's email address.
-	Email *openapi_types.Email `json:"email,omitempty"`
-
-	// A map of the user’s profile photo in various sizes, or null if no photo is set. Sizes provided are 21, 27, 36, 60, and 128. Images are in PNG format.
-	Photo *struct {
+	Photo struct {
 		Image128x128 *string `json:"image_128x128,omitempty"`
 		Image21x21   *string `json:"image_21x21,omitempty"`
 		Image27x27   *string `json:"image_27x27,omitempty"`
 		Image36x36   *string `json:"image_36x36,omitempty"`
 		Image60x60   *string `json:"image_60x60,omitempty"`
-	} `json:"photo"`
+	} `json:"photo,omitempty"`
 
-	// Workspaces and organizations this user may access.
-	// Note\: The API will only return workspaces and organizations that also contain the authenticated user.
-	Workspaces *[]WorkspaceCompact `json:"workspaces,omitempty"`
+	Workspaces []WorkspaceCompact `json:"workspaces,omitempty"`
 }
 
 // UserTaskListBase defines model for UserTaskListBase.
@@ -2245,21 +1754,14 @@ type UserTaskListBase UserTaskListCompact
 
 // UserTaskListCompact defines model for UserTaskListCompact.
 type UserTaskListCompact struct {
-	// Embedded struct due to allOf(#/components/schemas/AsanaResource)
-	AsanaResource `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
+	Name string `json:"name,omitempty"`
 
-	// The name of the user task list.
-	Name *string `json:"name,omitempty"`
-
-	// The owner of the user task list, i.e. the person whose My Tasks is represented by this resource.
-	Owner *struct {
+	Owner struct {
 		// Embedded struct due to allOf(#/components/schemas/UserCompact)
 		UserCompact `yaml:",inline"`
 	} `json:"owner,omitempty"`
 
-	// The workspace in which the user task list is located.
-	Workspace *struct {
+	Workspace struct {
 		// Embedded struct due to allOf(#/components/schemas/WorkspaceCompact)
 		WorkspaceCompact `yaml:",inline"`
 	} `json:"workspace,omitempty"`
@@ -2270,84 +1772,59 @@ type UserTaskListResponse UserTaskListBase
 
 // WebhookCompact defines model for WebhookCompact.
 type WebhookCompact struct {
-	// Embedded struct due to allOf(#/components/schemas/AsanaResource)
-	AsanaResource `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
+	Active bool `json:"active,omitempty"`
 
-	// If true, the webhook will send events - if false it is considered inactive and will not generate events.
-	Active   *bool               `json:"active,omitempty"`
-	Resource *AsanaNamedResource `json:"resource,omitempty"`
+	Resource AsanaNamedResource `json:"resource,omitempty"`
 
-	// The URL to receive the HTTP POST.
-	Target *string `json:"target,omitempty"`
+	Target string `json:"target,omitempty"`
 }
 
 // A WebhookFilter can be passed on creation of a webhook in order to filter the types of actions that trigger delivery of an [Event](/docs/tocS_Event)
 type WebhookFilter struct {
+	Action string `json:"action,omitempty"`
 
-	// The type of change on the **resource** to pass through the filter. For more information refer to `Event.action` in the [Event](/docs/tocS_Event) schema. This can be one of `changed`, `added`, `removed`, `deleted`, and `undeleted` depending on the nature of what has occurred on the resource.
-	Action *string `json:"action,omitempty"`
+	Fields []string `json:"fields,omitempty"`
 
-	// *Conditional.* A whitelist of fields for events which will pass the filter when the resource is changed. These can be any combination of the fields on the resources themselves. This field is only valid for `action` of type `changed`
-	Fields *[]string `json:"fields,omitempty"`
+	ResourceSubtype string `json:"resource_subtype,omitempty"`
 
-	// The resource subtype of the resource that the filter applies to. This should be set to the same value as is returned on the `resource_subtype` field on the resources themselves.
-	ResourceSubtype *string `json:"resource_subtype,omitempty"`
-
-	// The type of the resource which created the event when modified; for example, to filter to changes on regular tasks this field should be set to `task`.
-	ResourceType *string `json:"resource_type,omitempty"`
+	ResourceType string `json:"resource_type,omitempty"`
 }
 
 // WebhookRequest defines model for WebhookRequest.
 type WebhookRequest struct {
-
-	// An array of WebhookFilter objects to specify a whitelist of filters to apply to events from this webhook. If a webhook event passes any of the filters the event will be delivered; otherwise no event will be sent to the receiving server.
-	Filters *[]struct {
+	Filters []struct {
 		// Embedded struct due to allOf(#/components/schemas/WebhookFilter)
 		WebhookFilter `yaml:",inline"`
 		// Embedded fields due to inline allOf schema
 		// Embedded fields due to inline allOf schema
 	} `json:"filters,omitempty"`
 
-	// A resource ID to subscribe to. Many Asana resources are valid to create webhooks on, but higher-level resources require filters.
 	Resource string `json:"resource"`
 
-	// The URL to receive the HTTP POST. The full URL will be used to deliver events from this webhook (including parameters) which allows encoding of application-specific state when the webhook is created.
 	Target string `json:"target"`
 }
 
 // WebhookResponse defines model for WebhookResponse.
 type WebhookResponse struct {
-	// Embedded struct due to allOf(#/components/schemas/WebhookCompact)
-	WebhookCompact `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
+	CreatedAt time.Time `json:"created_at,omitempty"`
 
-	// The time at which this resource was created.
-	CreatedAt *time.Time `json:"created_at,omitempty"`
-
-	// Whitelist of filters to apply to events from this webhook. If a webhook event passes any of the filters the event will be delivered; otherwise no event will be sent to the receiving server.
-	Filters *[]struct {
+	Filters []struct {
 		// Embedded struct due to allOf(#/components/schemas/WebhookFilter)
 		WebhookFilter `yaml:",inline"`
 		// Embedded fields due to inline allOf schema
 		// Embedded fields due to inline allOf schema
 	} `json:"filters,omitempty"`
 
-	// The timestamp when the webhook last received an error when sending an event to the target.
-	LastFailureAt *time.Time `json:"last_failure_at,omitempty"`
+	LastFailureAt time.Time `json:"last_failure_at,omitempty"`
 
-	// The contents of the last error response sent to the webhook when attempting to deliver events to the target.
-	LastFailureContent *string `json:"last_failure_content,omitempty"`
+	LastFailureContent string `json:"last_failure_content,omitempty"`
 
-	// The timestamp when the webhook last successfully sent an event to the target.
-	LastSuccessAt *time.Time `json:"last_success_at,omitempty"`
+	LastSuccessAt time.Time `json:"last_success_at,omitempty"`
 }
 
 // A user identification object for specification with the addUser/removeUser endpoints.
 type WorkspaceAddUserRequest struct {
-
-	// A string identifying a user. This can either be the string "me", an email, or the gid of a user.
-	User *string `json:"user,omitempty"`
+	User string `json:"user,omitempty"`
 }
 
 // WorkspaceBase defines model for WorkspaceBase.
@@ -2355,12 +1832,7 @@ type WorkspaceBase WorkspaceCompact
 
 // WorkspaceCompact defines model for WorkspaceCompact.
 type WorkspaceCompact struct {
-	// Embedded struct due to allOf(#/components/schemas/AsanaResource)
-	AsanaResource `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
-
-	// The name of the workspace.
-	Name *string `json:"name,omitempty"`
+	Name string `json:"name,omitempty"`
 }
 
 // WorkspaceMembershipBase defines model for WorkspaceMembershipBase.
@@ -2368,35 +1840,25 @@ type WorkspaceMembershipBase WorkspaceMembershipCompact
 
 // WorkspaceMembershipCompact defines model for WorkspaceMembershipCompact.
 type WorkspaceMembershipCompact struct {
-	// Embedded struct due to allOf(#/components/schemas/AsanaResource)
-	AsanaResource `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
-	User      *UserCompact      `json:"user,omitempty"`
-	Workspace *WorkspaceCompact `json:"workspace,omitempty"`
+	User UserCompact `json:"user,omitempty"`
+
+	Workspace WorkspaceCompact `json:"workspace,omitempty"`
 }
 
 // WorkspaceMembershipResponse defines model for WorkspaceMembershipResponse.
 type WorkspaceMembershipResponse struct {
-	// Embedded struct due to allOf(#/components/schemas/WorkspaceMembershipBase)
-	WorkspaceMembershipBase `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
+	IsActive bool `json:"is_active,omitempty"`
 
-	// Reflects if this user still a member of the workspace.
-	IsActive *bool `json:"is_active,omitempty"`
+	IsAdmin bool `json:"is_admin,omitempty"`
 
-	// Reflects if this user is an admin of the workspace.
-	IsAdmin *bool `json:"is_admin,omitempty"`
+	IsGuest bool `json:"is_guest,omitempty"`
 
-	// Reflects if this user is a guest of the workspace.
-	IsGuest      *bool                 `json:"is_guest,omitempty"`
-	UserTaskList *UserTaskListResponse `json:"user_task_list,omitempty"`
+	UserTaskList UserTaskListResponse `json:"user_task_list,omitempty"`
 }
 
 // A user identification object for specification with the addUser/removeUser endpoints.
 type WorkspaceRemoveUserRequest struct {
-
-	// A string identifying a user. This can either be the string "me", an email, or the gid of a user.
-	User *string `json:"user,omitempty"`
+	User string `json:"user,omitempty"`
 }
 
 // WorkspaceRequest defines model for WorkspaceRequest.
@@ -2404,15 +1866,9 @@ type WorkspaceRequest WorkspaceBase
 
 // WorkspaceResponse defines model for WorkspaceResponse.
 type WorkspaceResponse struct {
-	// Embedded struct due to allOf(#/components/schemas/WorkspaceBase)
-	WorkspaceBase `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
+	EmailDomains []string `json:"email_domains,omitempty"`
 
-	// The email domains that are associated with this workspace.
-	EmailDomains *[]string `json:"email_domains,omitempty"`
-
-	// Whether the workspace is an *organization*.
-	IsOrganization *bool `json:"is_organization,omitempty"`
+	IsOrganization bool `json:"is_organization,omitempty"`
 }
 
 // ArchivedQueryParam defines model for archived_query_param.
